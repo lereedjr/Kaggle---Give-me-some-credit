@@ -220,7 +220,7 @@ dim(train)
 dim(test)
 ```
 
-## Logistic Regression
+### Logistic Regression
 
 First, we begin our modeling techniques with logistic regression. Since our outcome variable (SeriousDlqin2yrs) is  dichotomous, we are going to use the non-linear approach because the its not a linear outcome. Also, note that we must specify family = "binomial" for a binary classification context.
 
