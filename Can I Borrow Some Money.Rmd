@@ -1,0 +1,414 @@
+---
+title: "Can I Borrow Some Money?"
+author: "Mike Rhinehart"
+date: "June 5, 2018"
+output: html_document
+---
+
+### Introduction
+
+The is a dataset from a expired Kaggle competition where it requires participants to improve on the state of the art in credit scoring, by predicting the probability that somebody will experience financial distress in the next two years.
+
+Banks play a crucial role in market economies. They decide who can get finance and on what terms and can make or break investment decisions. For markets and society to function, individuals and companies need access to credit. 
+Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. The goal of this competition is to build a model that borrowers can use to help make the best financial decisions.
+
+### Data Preparation
+
+First, we begin reading in the dataset. Then we need to look at the structure our data to view the data types before performing exploratory analysis. The five number summary gives us an idea of the value range of the predictor variables and identifying the target variable or dependent variable. 
+
+```{r}
+credit = read.csv("cs-train.csv", header = TRUE) # reading in the dataset
+str(credit) # View the structure of the data to see the data types
+summary(credit) # five number summary
+```
+
+Here we look at the correlation matrix to measure the correlations between the predictors and the outcome variable. Noticed, there are cases of multi-collinearity between the NumberOfTime30.59DaysPastDueNotWorse, NumberOfTime60.89DaysPastDueNotWorse, and NumberOfTime60.89DaysPastDueNotWorse. This means we would have to drop two predictors and leave only one. Moreover, multicollinearity makes it tedious to assess the relative importance of the independent variables in explaining the variation caused by the dependent variable. Since they are closer to 1 on a scale to -1 to 1, we would keep the NumberOfTime30.59DaysPastDueNotWorse to avoid increases the standard errors of the coefficients. 
+
+```{r}
+library(corrplot)
+credit_miss <- na.omit(credit) # temporarily remove NA's before correlation plot
+corrplot(cor(credit_miss), method = "number", tl.cex = 0.5) # correlation matrix
+credit_miss$SeriousDlqin2yrs[credit_miss$SeriousDlqin2yrs == 0] <- "No"
+credit_miss$SeriousDlqin2yrs[credit_miss$SeriousDlqin2yrs == 1] <- "Yes"
+credit_miss$SeriousDlqin2yrs <- as.factor(credit_miss$SeriousDlqin2yrs) #change the outcome variable to categorical(factor)
+```
+
+We observed there are many missing values in the data and will deal those later. Next, we combined the three defaulted fields and removed two out of the three multi-collinearity predictor variables. 
+
+```{r}
+sum(is.na(credit_miss)) # count the number of NA's in the data
+credit_sub <- subset(credit_miss, select = -c(NumberOfTimes90DaysLate,NumberOfTime60.89DaysPastDueNotWorse))
+str(credit_sub) # view to make sure both fields are removed
+```
+
+### Data Cleaning
+
+First, we noticed RevolvingUtilizationOfUnsecuredLines field had some individuals with higher credit utilization greater than 100 percent. These are cases we will need to remove since no one can have go over than max use of credit. So we will replace those values greater than 100 percent with NA's. 
+
+In the boxplot for Age, there are several outliers in the upper whisker and one in the lower whisker that needs to be removed. So we will replace those outliers with NA's as well. 
+
+In the histogram, the skewness of Age, looks normally distributed. 
+
+```{r}
+library(ggplot2)
+credit_sub$RevolvingUtilizationOfUnsecuredLines[credit_sub$RevolvingUtilizationOfUnsecuredLines > 1] <- NA
+boxplot(credit_sub$age, main = "Age Boxplot")
+ggplot(credit_sub, aes(age)) + geom_histogram(binwidth = 4) + labs(title="Age Histogram")
+credit_sub$age[credit_sub$age < 21] <- NA
+credit_sub$age[credit_sub$age > 90] <- NA
+```
+
+In the boxplot of NumberOfTime30.59DaysPastDueNotWorse, it's really difficult to find if there are cases of outliers, other than the two in the upper extreme, since there are no quartile boxes or whiskers to interpret. So, we will plot a histogram to see if we can get a better look at possible outliers. Noticed, the observations on the histogram displays values only less than approximately to 10.We can assume these values are outliers and replace them with NA. 
+
+The DebtRatio field had some individuals with credit usage greater than 100 percent. These are cases we will need to remove since no one can borrow money than their max credit given to them. So we will replace those values greater than 100 percent with NA's. 
+
+```{r}
+boxplot(credit_sub$NumberOfTime30.59DaysPastDueNotWorse, main = "Number Of Times 30 - 59 Days Past Due Not Worse Boxplot")
+ggplot(credit_sub, aes(NumberOfTime30.59DaysPastDueNotWorse)) + geom_histogram(binwidth = 2) + labs(title="Number Of Time 30 - 59 Days Past Due Not Worse") 
+credit_sub$NumberOfTime30.59DaysPastDueNotWorse[credit_sub$NumberOfTime30.59DaysPastDueNotWorse > 10]  <- NA
+credit_sub$DebtRatio[credit_sub$DebtRatio > 1] <- NA
+```
+
+In the boxplot of MonthlyIncome, it's really difficult to find if there are cases of outliers, other than the one in the upper extreme, since there are no quartile boxes or whiskers to interpret. So, we will plot a histogram to see if we can get a better look of possible outliers. Noticed, the spread of the data is very skewed to the right and does not take shape of a normal distribution. Moroever, we are going to replace the Monthly Income greater 14000 to NA, so we can reduce inaccurate classifications errorsbefore using several machine learning techniques later. 
+
+We plotted the Monthly Boxplot again to detect cases of outliers and they are no longer in our data. 
+
+```{r}
+boxplot(credit_sub$MonthlyIncome, main = "Monthly Income Boxplot")
+ggplot(credit_sub, aes(MonthlyIncome)) + geom_histogram() + labs(title="Monthly Income")
+ggplot(credit_sub, aes(MonthlyIncome)) + geom_histogram(bins = 75) + labs(title="Monthly Income")+ xlim(0, 50000)
+credit_sub$MonthlyIncome[as.integer(credit_sub$MonthlyIncome) > 14000] <- NA
+boxplot(credit_sub$MonthlyIncome, main = "Monthly Income Boxplot")
+```
+
+In the Number of Open Credit Lines And Loans boxplot, there are serveral outliers in the upper whisker and the data looks slightly skewed to the right. Let's take a look at the histogram to be sure they are outliers and data is slighltly skewed to the right. The outliers in the boxplot could have caused it to not take the shape of a normal distribution, so lets remove them. 
+
+
+```{r}
+boxplot(credit_sub$NumberOfOpenCreditLinesAndLoans, main = "Number Of Open Credit Lines And Loans Boxplot")
+ggplot(credit_sub, aes(NumberOfOpenCreditLinesAndLoans)) + geom_histogram(bins = 30) + labs(title="Number Of Open Credit Lines And Loans")
+credit_sub$NumberOfOpenCreditLinesAndLoans[credit_sub$NumberOfOpenCreditLinesAndLoans > 20] <- NA
+```
+
+In the Number Real Estate Loans Or Lines boxplot, there are serveral outliers in the upper whisker and only one at the very top. Let's take a look at the histogram to be sure they are outliers. Noticed, the data is slighltly skewed to the right and does not have a bell-shaped curve. Moreover, the outliers in the boxplot could have caused it to not take the shape of a normal distribution, so lets replace those values greater than 7 them with NA. 
+
+```{r}
+boxplot(credit_sub$NumberRealEstateLoansOrLines, main = "Number Real Estate Loan Or Lines Boxplot")
+ggplot(credit_sub, aes(NumberRealEstateLoansOrLines)) + geom_histogram(bins = 30) + labs(title="Number Real Estate Loans Or Lines")
+credit_sub$NumberRealEstateLoansOrLines[credit_sub$NumberRealEstateLoansOrLines > 7] <- NA
+```
+
+In the Number of Dependents boxplot, there are serveral outliers in the upper whisker. Let's take a look at the histogram to be sure they are outliers. Since it doesn't display the values greater than 5, lets assume these are outliers and replace them with NA. 
+
+```{r}
+boxplot(credit_sub$NumberOfDependents, main = "Number of Dependents")
+ggplot(credit_sub, aes(NumberOfDependents)) + geom_histogram(binwidth = 1) + labs(title= "Number Of Dependents")
+credit_sub$NumberOfDependents[credit_sub$NumberOfDependents > 5] <- NA
+```
+
+From the cleaning above, let's see how many NA's our data contain. There are quite a bit of NA's in our data, so lets remove them before performing EDA. 
+
+```{r message=FALSE, warning=FALSE}
+sum(is.na(credit_sub))
+credit_clean <- na.omit(credit_sub)
+attach(credit_clean)
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent according to Revolving Utilization Of Unsecured Lines. 
+
+According to the t-test, there is a significant difference within the mean of the groups. 
+
+```{r message=FALSE, warning=FALSE}
+
+ggplot(data=credit_clean, aes(SeriousDlqin2yrs,RevolvingUtilizationOfUnsecuredLines)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = " Revolving Utilization Of Unsecured Lines by Serious Deliquency")
+
+t.test(RevolvingUtilizationOfUnsecuredLines~SeriousDlqin2yrs, var.equal=FALSE) # testing the means of the two groups
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent according to Age.
+
+According to the t-test, there is a significant difference within the mean of the groups. 
+
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,age)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "Age by Serious Deliquency")
+t.test(age~SeriousDlqin2yrs, var.equal=FALSE)
+```
+
+
+From the barplot, there were more number of individuals were Seriously Deliquent than were not delinquent according to NumberOfTimes 30 -59 Days Past Due Not Worse.
+
+According to the t-test, there is a significant difference within the mean of the groups. 
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,NumberOfTime30.59DaysPastDueNotWorse)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "NumberOfTimes 30 -59 Days Past Due Not Worse by Serious Deliquency")
+t.test(NumberOfTime30.59DaysPastDueNotWorse~SeriousDlqin2yrs, var.equal=FALSE)
+
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent according to Debt Ratio.
+
+According to the t-test, there is a significant difference within the mean of the groups. 
+
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,DebtRatio)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "Debt Ratio by Serious Deliquency")
+t.test(DebtRatio~SeriousDlqin2yrs, var.equal=FALSE)
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent according to Monthly Income.
+
+According to the t-test, there is a significant difference within the mean of the groups.
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,MonthlyIncome)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "Monthly Income by Serious Deliquency")
+t.test(MonthlyIncome~SeriousDlqin2yrs, var.equal=FALSE)
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent according to Number Of Open Credit Lines And Loans.
+
+According to the t-test, there is a significant difference within the mean of the groups.
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,NumberOfOpenCreditLinesAndLoans)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "Number Of Open Credit Lines And Loans by Serious Deliquency")
+t.test(NumberOfOpenCreditLinesAndLoans~SeriousDlqin2yrs, var.equal=FALSE)
+```
+
+From the barplot, there were an equivalent number of individuals who were seriously delinquent in according to Number of Dependents.
+
+According to the t-test, there is a significant difference within the mean of the groups.
+
+```{r}
+ggplot(credit_clean, aes(SeriousDlqin2yrs,NumberOfDependents)) +
+    geom_bar(stat="identity", position=position_dodge()) + labs(title = "Number Of Dependents by Serious Deliquency")
+t.test(NumberOfDependents~SeriousDlqin2yrs, var.equal=FALSE)
+```
+
+Here, we checked the number of proportionate values for SeriousDlqin2yrs for unbalancing. Then we are going to remove the X column because its not needed for modeling. 
+
+```{r}
+table(credit_clean$SeriousDlqin2yrs) # view the balance of the out
+credit_clean2 <- subset(credit_clean, select = -c(X)) # remove ID of individuals 
+```
+
+
+### Modeling
+
+Now we are going to begin introducing our cleaned and prepared data to different classification techniques to predict if an individual will experience financial distress in the next two years.
+
+First, we are going to split our data between 70/30 training and testing set. 
+
+```{r message=FALSE, warning=FALSE}
+library(caret)
+attach(credit_clean2)
+sample_data <- createDataPartition(SeriousDlqin2yrs, p = 0.7, list = FALSE) # splitting 70/30 train and test 
+train <- credit_clean2[sample_data,] # training set
+test <- credit_clean2[-sample_data,] # testing set
+```
+
+
+
+```{r}
+table(train$SeriousDlqin2yrs) # viewing the train set proportionality of the outcome variable
+table(test$SeriousDlqin2yrs) # viewing the test set proportionality of the outcome variable
+```
+
+After splitting the data, its good to make sure there are a equivalent amount of columns for the training and testing set. 
+
+```{r}
+dim(train)
+dim(test)
+```
+
+## Logistic Regression
+
+First, we begin our modeling techniques with logistic regression. Since our outcome variable (SeriousDlqin2yrs) is  dichotomous, we are going to use the non-linear approach because the its not a linear outcome. Also, note that we must specify family = "binomial" for a binary classification context.
+
+```{r message=FALSE, warning=FALSE}
+library(ROCR)
+library(ROSE)
+logit_model <- glm(SeriousDlqin2yrs ~., data = train, family = "binomial") # binomial for binary classification 
+summary(logit_model) # summary of the model 
+logit_pred <- predict(logit_model,newdata = test, type = "response") # predicting the class on unseen data
+logit_preds <- ifelse(logit_pred > 0.5, "Yes", "No") # threshold probabilities greater than 0.5
+confusionMatrix(table(logit_preds,test$SeriousDlqin2yrs)) # confusion matrix and Kappa Statistic
+roc.curve(test$SeriousDlqin2yrs, logit_pred) #
+```
+
+Noticed, in the summary table, there are a couple of variables that were not significant to our model, DebitRatio, NumberOfOpenCreditLinesAndLoans and NumberRealEstateLoansOrLines. They had p-values greater than 0.05, so we are going to remove both them to see if they will make difference in improving the accuracy of our next model. 
+
+How do we know that 0.5 value is the "optimal" value for accuracy. In reality, other cutoff values may be better (although 0.5 will tend to be the best value if all model assumptions are true and the sample size is reasonably large since we are dealing with a binary outcome).
+
+From our current model, it classification accuracy of 94% is very good but it seems like the learning algorithm has some issues with overfitting. If you look at the Kappa statistic, it has a value of 0.07 or 7% on a 100% scale. This means our model has a agreement equivalent to chance which means guessing in other words. Before, implementing our second model, we are going to balance the data, to improve the Kappa statistic and possibly the overall accuracy of our model.  
+
+For the ROC plot, we would like the curve to "hug" the right and upper borders of the plot (indicating high sensitivity and specificity). Although it's not as closer to the upper right boarders as I expected, we will evaluate it on our next model to see if has improved.  
+
+
+### Oversampling unbalanced data
+
+As stated above in our previous model, there were some problems with overfitting and unproportioned outcome variable imbalances. So we performed an oversampling method that works with minority class. It replicates the observations from minority class to balance the data. Since our training and testing data are severly unbalanced, we are going to perform this technique on both samples. 
+
+```{r}
+data_oversample_train <- ovun.sample(SeriousDlqin2yrs ~.,data = train, method = "over")$data
+table(data_oversample_train$SeriousDlqin2yrs)
+data_oversample_test <- ovun.sample(SeriousDlqin2yrs ~.,data = test, method = "over")$data
+table(data_oversample_test$SeriousDlqin2yrs)
+```
+
+As you can see from the results above, they are now both balanced now. 
+
+
+Below, we have our second logistic regression model. We removed a few of the predictor variables that were not significant to our first model. Noticed, we also incorporated the oversampled samples for our training and testing data. 
+
+```{r}
+logit_model2 <- glm(SeriousDlqin2yrs ~ RevolvingUtilizationOfUnsecuredLines + age + NumberOfTime30.59DaysPastDueNotWorse + MonthlyIncome + NumberOfDependents, data = data_oversample_train, family = "binomial")
+summary(logit_model2)
+os_pred <- predict(logit_model2, newdata = data_oversample_test, type = "response") # predicting the class on unseen data
+os_preds <- ifelse(os_pred > 0.5,"Yes", "No") # threshold of probabilities greater than 0.5 
+confusionMatrix(table(data_oversample_test$SeriousDlqin2yrs,os_preds)) # confusion matrix 
+roc.curve(data_oversample_test$SeriousDlqin2yrs, os_preds)
+```
+
+From the results of our second model, it didn't performed as expected with a classification accuracy of 73%. Check out the Kappa statistic of a value of 46% has moderate agreement as oppose to no aggreement in our first model. 
+
+The ROC value was very similair to our overall classification our model, which means our model is no longer overfitting. 
+
+## ROSE Sampling 
+
+The ROSE sampling method generates data synthetically and provides a better estimate of original data. We wanted to try another balancing technique for our outcome variable to measure if we can improve or receive a better accuracy than using the oversampling method above. 
+
+Noticed, the training and testing sample data is clearly proportionate to both levels. 
+
+```{r}
+data_rose_train <- ROSE(SeriousDlqin2yrs ~., data = train)$data # synthetic training data generated enlarges the features space of minority and majority class examples.
+data_rose_test <- ROSE(SeriousDlqin2yrs ~., data = test)$data # synthetic testing data generated enlarges the features space of minority and majority class examples.
+table(data_rose_train$SeriousDlqin2yrs)
+table(data_rose_test$SeriousDlqin2yrs)
+```
+
+From incorporating ROSE training and testing sample data, the model performed less than the oversampling method above. It had an accuracy of --%. The Kappa statistic of a value of --% has moderate agreement as oppose to no aggreement. 
+
+```{r}
+logit_model3 <- glm(SeriousDlqin2yrs~., data = data_rose_train, family = "binomial") # added the new ROSE sampling training data
+summary(logit_model3) # summary of the model 
+os_pred3 <- predict(logit_model3, newdata = data_rose_test, type = "response") # predicting the class using ROSE testing sample
+os_preds3 <- ifelse(os_pred3 > 0.5,"Yes", "No")# threshold of probabilities greater than 0.5 
+confusionMatrix(table(data_rose_test$SeriousDlqin2yrs,os_preds3)) # confusion matrix 
+roc.curve(data_rose_test$SeriousDlqin2yrs, os_preds3)
+```
+
+
+As we can see there was little to no difference in the overall accuracy of model in comparision to oversampling technique above. 
+
+### Decision Tree
+
+Now we are going to fit a Tree to our data to predict if an individual is going to be seriously delinquent in two years. We are incorporating a cross-validation technique within the decision tree model to find the best optimal value for the complexity parameter for reducing the mean prediction error of our model. 
+
+```{r}
+library(rpart)
+rf_model <- train(SeriousDlqin2yrs ~., data = data_oversample_train, method = "rpart", trControl = trainControl("repeatedcv", number = 10)) # decision tree model with cross-validation
+print(rf_model) # Plot the trees
+par(xpd = NA) # Avoid clipping the text in some device
+plot(rf_model$finalModel)# Plot the final tree model
+text(rf_model$finalModel,  digits = 3) # adding the names of the relevant variable names to the trees
+dt_y_hat <- predict(rf_model, data_oversample_test)
+confusionMatrix(table(dt_y_hat,data_oversample_test$SeriousDlqin2yrs))
+roc.curve(data_oversample_test$SeriousDlqin2yrs, dt_y_hat)
+```
+
+By adding using the optimal value for the complexity paramter from our previous model for another model,there will be no improvement or changes in the overall classification accuracy nor the confusion matrix itself. The reason its going to be no change is due to the cp value being very small.   
+
+
+### K-Nearest Neighboor
+
+Now we are going to implement a K-Nearest Neighboor technique identifying the k most similar training observations  to our new observation. Also, we incorporae cross-validation along with the K-NN algorithm to find the optimal k value to reduce the mean prediction error. 
+
+```{r}
+knn_model <- train(SeriousDlqin2yrs ~., data = data_oversample_train, method = "knn",trControl = trainControl("repeatedcv", number = 10),preProcess = c("center","scale"), tuneLength = 10) # Set tuneLength to random to a random value to find the best one
+print(knn_model) # summary of our model 
+knn_model$bestTune # optimal value for k
+knn_y_hat <- predict(knn_model, data_oversample_test) # predicting the class on unseen data
+confusionMatrix(table(knn_y_hat,data_oversample_test$SeriousDlqin2yrs)) # confusion matrix 
+roc.curve(data_oversample_test$SeriousDlqin2yrs, knn_y_hat)
+```
+
+From the results from our K-NN model above, the optimal value for the best accuracy of our model is 5. We are going to use the optimal k value for our tuneLength to measure if our model accuracy will improve or not. 
+
+From the results of our model above, it had a classification accuracy of65-%. Check out the Kappa statistic of a value of 30% has slight agreement as oppose to no aggreement.
+
+
+As you can see, we used 5 for our tuneLength for our second model. 
+
+```{r}
+ctrl <- trainControl(method="repeatedcv",repeats = 3,classProbs=TRUE,summaryFunction = twoClassSummary)
+knn_model2 <- train(SeriousDlqin2yrs ~., data = data_oversample_train, method = "knn",trControl = ctrl,preProcess = c("center","scale"), tuneLength = 5)
+knn_model2
+knn_y_hat2 <- predict(knn_model2, data_oversample_test) # predicting the class on unseen data
+confusionMatrix(knn_y_hat2,data_oversample_test$SeriousDlqin2yrs) # confusion matrix
+roc.curve(data_oversample_test$SeriousDlqin2yrs, knn_y_hat2) # ROC curve 
+```
+
+From the results from our K-NN model above, the optimal value for the best accuracy of our model is 65%. The model did not improve at all.  
+
+
+### Ensemble Learning
+
+Given a list of caret models, the caretStack() function can be used to specify a higher-order model to learn how to best combine the predictions of sub-models together.
+
+Let's first look at creating 5 sub-models for to finish our analysis specifically:
+
+    Gradient Boosting (GBM)
+    Classification and Regression Trees (CART)
+    Logistic Regression (via Generalized Linear Model or GLM)
+    k-Nearest Neighbors (kNN)
+    Naive Bayes (NB)
+
+Below is an example that creates these 5 sub-models. Note the new helpful caretList() function provided by the caretEnsemble package for creating a list of standard caret models.
+
+```{r message=FALSE, warning=FALSE}
+library(caretEnsemble) 
+control <- trainControl(method="repeatedcv", number=10, repeats=3, savePredictions='final', classProbs=TRUE)
+algorithmList <- c('gbm', 'rpart', 'glm', 'knn', 'nb') # stacking 5 modeling techniques 
+ensemble_learning <- caretList(SeriousDlqin2yrs~., data=data_oversample_train, trControl=control, methodList=algorithmList)
+results <- resamples(ensemble_learning)
+summary(results) # summary of all the combined models 
+dotplot(results) # plot to check Kappa and Accuracy differences 
+
+```
+
+We can see that the KNN creates the most accurate model with an accuracy of 89%.
+
+```{r message=FALSE, warning=FALSE}
+stackControl <- trainControl(method="repeatedcv", number=10, repeats=3, savePredictions='final', classProbs=TRUE)
+stack.glm <- caretStack(ensemble_learning, method="glm", metric="Accuracy", trControl=stackControl)
+print(stack.glm)
+```
+
+From the model above, we combine the predictions of different models using stacking, it is desirable that the predictions made by the sub-models have low correlation. This would suggest that the models are skillful but in different ways, allowing a new classifier to figure out how to get the best from each model for an improved score.
+
+
+
+Let's check these predictions from our training model on our testing set. 
+
+```{r message=FALSE, warning=FALSE}
+stacked_pred <- predict(stack.glm, data_oversample_test)
+confusionMatrix(stacked_pred,data_oversample_test$SeriousDlqin2yrs)
+```
+
+The model didn't perform like I expected. From the combine predictions from the 5 classification models, the accuracyof 52% was lower than all the previous individuals models shown above. We are going to use second model of logistic regression as our final model to submit to the kaggle competition. 
+
+
+Lastly, we write our results to a csv file for kaggle submission. 
+
+```{r}
+submission <- data.frame(ID = data_oversample_test$X, Serious_Deliquency = os_pred)
+head(submission)
+write.csv(submission, file = "MySubmission.csv", row.names = F)
+```
+
