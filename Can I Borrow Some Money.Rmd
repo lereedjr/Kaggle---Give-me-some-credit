@@ -1,9 +1,3 @@
----
-title: "Can I Borrow Some Money?"
-author: "Mike Rhinehart"
-date: "June 5, 2018"
-output: html_document
----
 
 ### Introduction
 
