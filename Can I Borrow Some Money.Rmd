@@ -273,7 +273,7 @@ From the results of our second model, it didn't performed as expected with a cla
 
 The ROC value was very similair to our overall classification our model, which means our model is no longer overfitting. 
 
-## ROSE Sampling 
+### ROSE Sampling 
 
 The ROSE sampling method generates data synthetically and provides a better estimate of original data. We wanted to try another balancing technique for our outcome variable to measure if we can improve or receive a better accuracy than using the oversampling method above. 
 
