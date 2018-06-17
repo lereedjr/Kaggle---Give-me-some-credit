@@ -46,33 +46,33 @@ NumberOfDependents: Number of dependents in family excluding themselves (spouse,
 Read in the dataset to look at the structure of the data to view data types of the variables and their five-number summary.
 •	Look at the data types (integer, number, factor) to decide if they need to be categorical or continuous. 
 •	Check the five-number summary to measure the range and distribution of the variables. 
-    o	Minimum
-    o	Maximum
-    o	Mean
-    o	Median
-    o	Quartiles (First and Third)
+    - Minimum
+    - Maximum
+    - Mean
+    - Median
+    - Quartiles (First and Third)
 
 #### Data Cleaning
 Transform variables to make sure they have the correct value ranges that makes sense. 
 -  Remove outliers/anomalies
-    o	Replace missing or extensive ranges with NA
+   - Replace missing or extensive ranges with NA
 -  Remove all the NA’s
 
 #### Exploratory Data Analysis
 Look at the patterns or trends in the data using histograms and barplots. 
-•	Check the distribution of all continuous variables
-    o	Make sure they are normally distributed
-•	Bivariate bar plot visualizations of target variable and each predictor
-    o	Measure the count between the two groups in the target variable 
-•	T-test for equal variance among between the two groups 
+- Check the distribution of all continuous variables
+ - Make sure they are normally distributed
+- Bivariate bar plot visualizations of target variable and each predictor
+ - Measure the count between the two groups in the target variable 
+- T-test for equal variance among between the two groups 
 
 #### Modeling
 The target variable of the data is categorical, so classification machine learning algorithms will be used. 
-•	Classification techniques
-    o	Logistic Regression
-    o	Decision Tree
-    o	K-NN
-    o	Ensemble Methods
+- Classification techniques
+    - Logistic Regression
+    - Decision Tree
+    - K-NN
+    - Ensemble Methods
     
 ### Conclusion
 Chose the best model from the four different classification techniques with a very high accuracy and kappa statistic. 
