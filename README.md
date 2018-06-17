@@ -40,8 +40,8 @@ NumberOfDependents: Number of dependents in family excluding themselves (spouse,
 
 ### Visualization:
 
-### Analysis:
 
+### Analysis:
 #### Data Preparation 
 Read in the dataset to look at the structure of the data to view data types of the variables and their five-number summary.
 •	Look at the data types (integer, number, factor) to decide if they need to be categorical or continuous. 
@@ -53,7 +53,7 @@ Read in the dataset to look at the structure of the data to view data types of t
     o	Quartiles (First and Third)
 
 #### Data Cleaning
-Transform variables to make sure they have the correct value ranges that makes sense 
+Transform variables to make sure they have the correct value ranges that makes sense. 
 •	Remove outliers/anomalies
     o	Replace missing or extensive ranges with NA
 •	Remove all the NA’s
