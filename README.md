@@ -1,17 +1,40 @@
-# Kaggle---Give-me-some-credit
-Title of the project – Can I Borrow Some Money?
+
+# Can I Borrow Some Money?
+
+### Overview
 
 The Kaggle competition requires participants to improve on the state of the art in credit scoring, by predicting the probability that somebody will experience financial distress in the next two years.
 
-What type of data science task is it?
-Classification using Supervised Learning
-
-Data: Banks play a crucial role in market economies. They decide who can get finance and on what terms and can make or break investment decisions. For markets and society to function, individuals and companies need access to credit. 
-Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. he dataset is 150,000 rows and 11 columns. 
+Banks play a crucial role in market economies. They decide who can get finance and on what terms and can make or break investment decisions. For markets and society to function, individuals and companies need access to credit. 
+Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. 
 
 ### Motivation
 
 The goal of this dataset is to participate in a Kaggle competition is to build a model that borrowers can use to help make the best financial decisions.Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted.
 
-How will you analyze the data? What machine learning methods do you plan to use?
-First, I’m going to begin by using EDA to get a feel if the data can tell us beyond the formal modeling or hypothesis testing. The machine learning methods I plan to use are Decision Tree, Logistic Regression, KNN, and Ensemble learning. 
+### Data
+The dataset contains 150,000 rows and 11 columns. Go to https://www.kaggle.com/c/GiveMeSomeCredit/data for dataset. 
+
+#### Variable Names:
+SeriousDlqin2yrs: Person experienced 90 days past due delinquency or worse 
+
+RevolvingUtilizationOfUnsecuredLines: Total balance on credit cards and personal lines of credit except real estate and no installment debt like car loans divided by the sum of credit limits.
+
+age:Age of borrower in years
+
+NumberOfTime30-59DaysPastDueNotWorse: Number of times borrower has been 30-59 days past due but no worse in the last 2 years.
+
+DebtRatio : Monthly debt payments, alimony,living costs divided by monthy gross income
+
+MonthlyIncome: Monthly debt payments, alimony,living costs divided by monthy gross income
+
+NumberOfOpenCreditLinesAndLoans: Number of Open loans (installment like car loan or mortgage) and Lines of credit (e.g. credit cards)
+
+NumberOfTimes90DaysLate: Number of times borrower has been 90 days or more past due.
+
+NumberRealEstateLoansOrLines:Number of mortgage and real estate loans including home equity lines of credit.
+
+NumberOfTime60-89DaysPastDueNotWorse: Number of times borrower has been 60-89 days past due but no worse in the last 2 years.
+
+NumberOfDependents: Number of dependents in family excluding themselves (spouse, children etc.)
+
