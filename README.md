@@ -41,7 +41,8 @@ NumberOfDependents: Number of dependents in family excluding themselves (spouse,
 ### Visualization:
 
 ### Analysis:
-Data Preparation 
+
+#### Data Preparation 
 Read in the dataset to look at the structure of the data to view data types of the variables and their five-number summary.
 •	Look at the data types (integer, number, factor) to decide if they need to be categorical or continuous. 
 •	Check the five-number summary to measure the range and distribution of the variables. 
@@ -50,21 +51,22 @@ Read in the dataset to look at the structure of the data to view data types of t
     o	Mean
     o	Median
     o	Quartiles (First and Third)
-Data Cleaning
+
+#### Data Cleaning
 Transform variables to make sure they have the correct value ranges that makes sense 
 •	Remove outliers/anomalies
     o	Replace missing or extensive ranges with NA
 •	Remove all the NA’s
 
-Exploratory Data Analysis
+#### Exploratory Data Analysis
 Look at the patterns or trends in the data using histograms and barplots. 
 •	Check the distribution of all continuous variables
     o	Make sure they are normally distributed
-
 •	Bivariate bar plot visualizations of target variable and each predictor
     o	Measure the count between the two groups in the target variable 
 •	T-test for equal variance among between the two groups 
-Modeling
+
+#### Modeling
 The target variable of the data is categorical, so classification machine learning algorithms will be used. 
 •	Classification techniques
     o	Logistic Regression
