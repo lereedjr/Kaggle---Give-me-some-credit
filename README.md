@@ -55,15 +55,15 @@ Read in the dataset to look at the structure of the data to view data types of t
 #### Data Cleaning
 Transform variables to make sure they have the correct value ranges that makes sense. 
 -  Remove outliers/anomalies
-   - Replace missing or extensive ranges with NA
+    - Replace missing or extensive ranges with NA
 -  Remove all the NA’s
 
 #### Exploratory Data Analysis
 Look at the patterns or trends in the data using histograms and barplots. 
 - Check the distribution of all continuous variables
- - Make sure they are normally distributed
+    - Make sure they are normally distributed
 - Bivariate bar plot visualizations of target variable and each predictor
- - Measure the count between the two groups in the target variable 
+    - Measure the count between the two groups in the target variable 
 - T-test for equal variance among between the two groups 
 
 #### Modeling
