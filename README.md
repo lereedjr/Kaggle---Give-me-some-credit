@@ -13,7 +13,7 @@ Credit scoring algorithms, which make a guess at the probability of default, are
 The goal of this dataset is to participate in a Kaggle competition is to build a model that borrowers can use to help make the best financial decisions.Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted.
 
 ### Data
-The dataset contains 150,000 rows and 11 columns. Go to https://www.kaggle.com/c/GiveMeSomeCredit/data for dataset. 
+The dataset contains 150,000 rows and 11 columns. Go to kaggle https://www.kaggle.com/c/GiveMeSomeCredit/data for dataset. 
 
 #### Variable Names:
 SeriousDlqin2yrs: Person experienced 90 days past due delinquency or worse 
