@@ -71,12 +71,10 @@ Look at the patterns or trends in the data using histograms and barplots.
 
 #### Modeling
 The target variable of the data is categorical, so classification machine learning algorithms will be used. 
-- Perform classification techniques using cross-validation
-    - Logistic Regression
-    - Decision Tree
-    - K-NN
-    - Ensemble Methods
- - Predict using test set
+- Perform classification techniques using cross-validation with Logistic Regression, Decision Tree, K-NN, and Ensemble Methods.
+    - Confusion Matrix
+    - ROC
+    - Predict using test set
     
 ### Conclusion
 Chose the best model from the four different classification techniques with a very high accuracy and kappa statistic. 
