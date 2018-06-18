@@ -56,7 +56,7 @@ Read in the dataset to look at the structure of the data to view data types of t
     - Quartiles (First and Third)
 
 #### Data Cleaning
-Transform variables to make sure they have the correct value ranges that makes sense. 
+Transform variables (if needed) to make sure they have the correct value ranges that makes sense. 
 -  Remove outliers/anomalies
     - Replace missing or extensive ranges with NA
 -  Remove all the NA’s
