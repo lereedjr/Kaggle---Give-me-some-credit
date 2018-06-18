@@ -47,8 +47,8 @@ The model building process involves setting up ways of collecting data, understa
 ### Analysis:
 #### Data Preparation 
 Read in the dataset to look at the structure of the data to view data types of the variables and their five-number summary.
-•	Look at the data types (integer, number, factor) to decide if they need to be categorical or continuous. 
-•	Check the five-number summary to measure the range and distribution of the variables. 
+- Look at the data types (integer, number, factor) to decide if they need to be categorical or continuous. 
+- Check the five-number summary to measure the range and distribution of the variables. 
     - Minimum
     - Maximum
     - Mean
