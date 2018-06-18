@@ -40,6 +40,7 @@ NumberOfDependents: Number of dependents in family excluding themselves (spouse,
 
 ### Visualization:
 
+<a href="http://tinypic.com?ref=2w2gghv" target="_blank"><img src="http://i64.tinypic.com/2w2gghv.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 ### Analysis:
 #### Data Preparation 
