@@ -44,8 +44,15 @@ The model building process involves setting up ways of collecting data, understa
 
 <a href="http://tinypic.com?ref=2w2gghv" target="_blank"><img src="http://i64.tinypic.com/2w2gghv.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
-#### Histogram of Number of Open Credit Lines
+In the Number of Open Credit Lines And Loans boxplot, there are serveral outliers in the upper whisker and the data looks slightly skewed to the right. 
+
+#### Histogram of Number of Open Credit Lines  
 <a href="http://tinypic.com?ref=314fbqd" target="_blank"><img src="http://i65.tinypic.com/314fbqd.png" border="0" alt="Image and video hosting by TinyPic"></a>
+
+In the histogram to be sure they are outliers and data is slighltly skewed to the right. The outliers in the boxplot could have caused it to not take the shape of a normal distribution, so lets remove them.
+
+#### Boxplot of Number of Open Credit Lines 
+<a href="http://tinypic.com?ref=334ro5x" target="_blank"><img src="http://i65.tinypic.com/334ro5x.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 ### Analysis:
 #### Data Preparation 
