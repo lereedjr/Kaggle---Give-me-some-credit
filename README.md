@@ -52,7 +52,7 @@ In the Number of Open Credit Lines And Loans boxplot, there are serveral outlier
 In the histogram to be sure they are outliers and data is slighltly skewed to the right. The outliers in the boxplot could have caused it to not take the shape of a normal distribution, so lets remove them.
 
 #### Boxplot of Number of Open Credit Lines 
-<a href="http://tinypic.com?ref=334ro5x" target="_blank"><img src="http://i65.tinypic.com/334ro5x.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="http://tinypic.com?ref=bg8o44" target="_blank"><img src="http://i65.tinypic.com/bg8o44.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 ### Analysis:
 #### Data Preparation 
