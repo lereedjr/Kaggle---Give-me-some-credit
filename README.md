@@ -38,11 +38,14 @@ NumberOfTime60-89DaysPastDueNotWorse: Number of times borrower has been 60-89 da
 
 NumberOfDependents: Number of dependents in family excluding themselves (spouse, children etc.)
 
-### Visualization:
+### Visualizations:
 
 The model building process involves setting up ways of collecting data, understanding and paying attention to what is important in the data to answer if individuals will experience financial distress in the next two years. Here's the layout of the process:
 
 <a href="http://tinypic.com?ref=2w2gghv" target="_blank"><img src="http://i64.tinypic.com/2w2gghv.png" border="0" alt="Image and video hosting by TinyPic"></a>
+
+#### Histogram of Number of Open Credit Lines
+<a href="http://tinypic.com?ref=314fbqd" target="_blank"><img src="http://i65.tinypic.com/314fbqd.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 ### Analysis:
 #### Data Preparation 
